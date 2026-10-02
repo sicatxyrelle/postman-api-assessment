@@ -1,0 +1,750 @@
+{
+  "info": {
+    "_postman_id": "45bced0a-f514-4e79-9a2c-93fc8b136f2e",
+    "name": "Assessment-collection",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "58636511",
+    "_collection_link": "https://go.postman.co/collection/58636511-45bced0a-f514-4e79-9a2c-93fc8b136f2e?source=collection_link"
+  },
+  "item": [
+    {
+      "name": "Happy Path",
+      "item": [
+        {
+          "name": "post-token",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst response = pm.response.json();\r\n\r\npm.environment.set(\"token\", response.accessToken);\r\nconsole.log(\"token:\", response.accessToken);\r\n"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "Admin123",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "pw0rD!123456",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/token",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst user = pm.response.json();\r\n\r\npm.test(\"Name has a valid record\", function(){\r\n    user.forEach(function(record){\r\n    pm.expect(record).to.have.property('name');\r\n    pm.expect(record.name).to.be.a('string');\r\n    pm.expect(record.name).to.have.lengthOf.at.least(1);\r\n    });\r\n});\r\n\r\npm.test(\"Email has a valid record\", function(){\r\n    user.forEach(function(record){\r\n    pm.expect(record).to.have.property('email');\r\n    pm.expect(record.email).to.be.a('string');\r\n    pm.expect(record.email).to.have.lengthOf.at.least(1);\r\n    });\r\n});\r\n\r\npm.test(\"NickName is valid if available\", function () {\r\n    user.forEach(function(record){\r\n    if (record.nickName !== undefined) {\r\n        pm.expect(record.nickName).to.be.a('string');\r\n        pm.expect(record.nickName).to.have.lengthOf.at.least(0);\r\n    } else {\r\n        pm.expect(record.nickName).to.not.have.property('nickName');\r\n    }});\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-users-userId",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst user = pm.response.json();\r\n\r\npm.test(\"Name has a valid record\", function(){\r\n    user.forEach(function(record){\r\n    pm.expect(record).to.have.property('name');\r\n    pm.expect(record.name).to.be.a('string');\r\n    pm.expect(record.name).to.have.lengthOf.at.least(1);\r\n    });\r\n});\r\n\r\npm.test(\"Email has a valid record\", function(){\r\n    user.forEach(function(record){\r\n    pm.expect(record).to.have.property('email');\r\n    pm.expect(record.email).to.be.a('string');\r\n    pm.expect(record.email).to.have.lengthOf.at.least(1);\r\n    });\r\n});\r\n\r\npm.test(\"NickName is valid if available\", function () {\r\n    user.forEach(function(record){\r\n    if (record.nickName !== undefined) {\r\n        pm.expect(record.nickName).to.be.a('string');\r\n        pm.expect(record.nickName).to.have.lengthOf.at.least(0);\r\n    } else {\r\n        pm.expect(record.nickName).to.not.have.property('nickName');\r\n    }});\r\n});\r\n\r\npm.test(\"Retrieved user equals to user id request\", function(){\r\n    user.forEach(function(record){\r\n    pm.expect(record.id).to.eql(pm.environment.get(\"userId\"));\r\n    console.log(\"id returned:\", record.id, \"request id:\", pm.environment.get(\"userId\"));\r\n    });\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{userId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{userId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "post-users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Successful POST request\", function () {\r\n    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r\n});\r\n\r\n/*const record = pm.response.json().receivedData;\r\n\r\npm.test(\"Record type is an object\", function(){\r\n    pm.expect(record).to.be.an('object');\r\n});\r\n\r\npm.test(\"Name has a valid record\", function(){\r\n    pm.expect(record).to.have.property('name');\r\n    pm.expect(record.name).to.be.a('string');\r\n    pm.expect(record.name).to.have.lengthOf.at.least(1);\r\n});\r\n\r\npm.test(\"Email has a valid record\", function(){\r\n    pm.expect(record).to.have.property('email');\r\n    pm.expect(record.email).to.be.a('string');\r\n    pm.expect(record.email).to.have.lengthOf.at.least(1);\r\n});\r\n\r\npm.test(\"NickName is valid if available\", function () {\r\n    if (record.nickName !== undefined) {\r\n        pm.expect(record.nickName).to.be.a('string');\r\n        pm.expect(record.nickName).to.have.lengthOf.at.least(0);\r\n    } else {\r\n        pm.expect(record.nickName).to.not.have.property('nickName');\r\n    }\r\n});\r\n\r\n//Observation: test failing for these assertions due to malformed JSONError in response body\r\n*/"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Xyrelle Mae Sicat\",\r\n    \"email\": \"sicatxyrelle@gmail.com\",\r\n    \"nickName\": \"Xy\"\r\n}\r\n",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "put-users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Successful PUT request\", function () {\r\n    pm.expect(pm.response.code).to.be.oneOf([201, 202]);\r\n});\r\n\r\n/*const record = pm.response.json().receivedData;\r\n\r\npm.test(\"Record type is an object\", function(){\r\n    pm.expect(record).to.be.an('object');\r\n});\r\n\r\npm.test(\"Name has a valid record\", function(){\r\n    pm.expect(record).to.have.property('name');\r\n    pm.expect(record.name).to.be.a('string');\r\n    pm.expect(record.name).to.have.lengthOf.at.least(1);\r\n});\r\n\r\npm.test(\"Email has a valid record\", function(){\r\n    pm.expect(record).to.have.property('email');\r\n    pm.expect(record.email).to.be.a('string');\r\n    pm.expect(record.email).to.have.lengthOf.at.least(1);\r\n});\r\n\r\npm.test(\"NickName is valid if available\", function () {\r\n    if (record.nickName !== undefined) {\r\n        pm.expect(record.nickName).to.be.a('string');\r\n        pm.expect(record.nickName).to.have.lengthOf.at.least(0);\r\n    } else {\r\n        pm.expect(record.nickName).to.not.have.property('nickName');\r\n    }\r\n});\r\n\r\n//Observation: test failing for these assertions due to malformed JSONError in response body\r\n*/"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Xyrelle Mae Sicat\",\r\n    \"email\": \"{{modifiedEmail}}\",\r\n    \"nickName\": \"Xy\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete-users",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 200\", function () {\r\n    pm.response.to.have.status(200);\r\n});\r\n\r\nconst deletedUser = pm.response.json();\r\n\r\npm.test(\"User deleted successsfully\", function(){\r\n    pm.expect(deletedUser.message).to.eql(\"User deleted successfully\");\r\n});\r\n\r\npm.test(\"Deleted user equals to user id request\", function(){\r\n    pm.expect(deletedUser.id).to.eql(pm.environment.get(\"userId\"));\r\n    console.log(\"id returned:\", deletedUser.id, \"request id:\", pm.environment.get(\"userId\"));\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{userId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{userId}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "Negative Tests",
+      "item": [
+        {
+          "name": "post-token-4xx",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 401\", function () {\r\n    pm.response.to.have.status(401);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "basic",
+              "basic": [
+                {
+                  "key": "username",
+                  "value": "testdata",
+                  "type": "string"
+                },
+                {
+                  "key": "password",
+                  "value": "testdata",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/token",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "token"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-users-unauthorized-4xx",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 401\", function(){\r\n    pm.expect(pm.response.code).to.equal(401);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{userId}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{userId}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "post-users-unauthorized-4xx",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 401\", function(){\r\n    pm.expect(pm.response.code).to.equal(401);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-users-userId-4xx",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 404\", function(){\r\n    pm.expect(pm.response.code).to.equal(404);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/{{userId2}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "{{userId2}}"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "get-users-invaliduserId-4xx",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 404\", function(){\r\n    pm.expect(pm.response.code).to.equal(404);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/users/abc",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "abc"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "post-users-4xx",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 404\", function () {\r\n    pm.response.to.have.status(404);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Xyrelle\",\r\n    \"email\": \"sicatxyrelle@gmail.com\",\r\n    \"nickName\": \"Xy\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/userss",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "userss"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "post-users-name-4xx",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {\r\n    pm.response.to.have.status(400);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    //\"name\": \"Xyrelle\",\r\n    \"email\": \"sicatxyrelle@gmail.com\",\r\n    \"nickName\": \"Xy\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "post-users-email-4xx",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {\r\n    pm.response.to.have.status(400);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Xyrelle\",\r\n    //\"email\": \"sicatxyrelle@gmail.com\",\r\n    \"nickName\": \"Xy\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "put-users-name-4xx",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {\r\n    pm.response.to.have.status(400);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    //\"name\": \"Xyrelle\",\r\n    \"email\": \"sicatxyrelle@gmail.com\",\r\n    \"nickName\": \"Xy\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "put-users-email-4xx",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 400\", function () {\r\n    pm.response.to.have.status(400);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Xyrelle\",\r\n    //\"email\": \"sicatxyrelle@gmail.com\",\r\n    \"nickName\": \"Xy\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "delete-users-email-4xx",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test(\"Status code is 404\", function () {\r\n    pm.response.to.have.status(404);\r\n});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "bearer",
+              "bearer": [
+                {
+                  "key": "token",
+                  "value": "{{token}}",
+                  "type": "string"
+                }
+              ]
+            },
+            "method": "DELETE",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"name\": \"Xyrelle\",\r\n    //\"email\": \"sicatxyrelle@gmail.com\",\r\n    \"nickName\": \"Xy\"\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{base_url}}/users/users/{{userId2}}",
+              "host": [
+                "{{base_url}}"
+              ],
+              "path": [
+                "users",
+                "users",
+                "{{userId2}}"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "modifiedEmail",
+      "value": "sicatxyrellemae@gmail.com"
+    }
+  ]
+}
